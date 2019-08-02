@@ -5,14 +5,17 @@
          monitoring="autodetect"
          dynamicConfig="true">
 
-	<diskStore="C:/Terracotta"/>
+	<!--<diskStore path="C:/Terracotta" />-->
+	<terracottaConfig url="vvaigcs33677:9510"/>
 
 	<cache
 		name="movieCache"
 		maxEntriesLocalHeap="10"
 		timeToIdleSeconds="0"
 		timeToLiveSeconds="300">
-			<persistence strategy="localRestartable"
+	<!--	eternal="true"
+		diskPersistent="true"> -->
+			<!--<persistence strategy="localRestartable" />-->
 	</cache>
          
 </ehcache>
