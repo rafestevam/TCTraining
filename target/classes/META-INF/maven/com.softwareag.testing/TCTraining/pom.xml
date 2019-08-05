@@ -55,4 +55,19 @@
 		<!-- <version>4.3.7.0.55</version> -->
 		<!-- </dependency> -->
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<jvmArguments>
+						-Dcom.tc.productkey.path=C:\\BigMemory\\terracotta-license.key
+					</jvmArguments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
