@@ -9,6 +9,16 @@ public class Movie implements Serializable {
 	private int id;
 	private String name;
 	private String director;
+	
+	public Movie() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Movie(int id, String name, String director) {
+		this.id = id;
+		this.name = name;
+		this.director = director;
+	}
 
 	public int getId() {
 		return id;

@@ -17,5 +17,14 @@
 		diskPersistent="true"> -->
 			<!--<persistence strategy="localRestartable" />-->
 	</cache>
+	
+	<cache
+		name="testCache"
+		maxEntriesLocalHeap="0"
+		timeToIdleSeconds="0"
+		timeToLiveSeconds="10000">
+			<!--<persistence strategy="localRestartable" />-->
+			<terracotta consistency="strong"/>
+	</cache>
          
 </ehcache>

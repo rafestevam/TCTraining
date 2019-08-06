@@ -28,7 +28,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/raeo/Documents/SoftwareAG/Knowledge Base/Courses/webMethods/211-67E - Building In-Memory Applications with Terracotta BigMemory/EHCACHE Examples/ehcache-ee-terracotta-client-all.jar"/>
+	<classpathentry kind="lib" path="C:/Users/raeo/Documents/SoftwareAG/Knowledge Base/Courses/webMethods/211-67E - Building In-Memory Applications with Terracotta BigMemory/EHCACHE Examples/ehcache-ee-2.10.2.2.15.jar"/>
 	<classpathentry kind="lib" path="C:/Users/raeo/Documents/SoftwareAG/Knowledge Base/Courses/webMethods/211-67E - Building In-Memory Applications with Terracotta BigMemory/EHCACHE Examples/terracotta-toolkit-runtime-ee-4.3.7.0.55.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
