@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CachePut;
 
 import com.softwareag.testing.TCTraining.models.Movie;
 
@@ -17,6 +16,7 @@ public class MovieRepository {
 	
 	private static Logger log = LoggerFactory.getLogger(MovieRepository.class);
 	
+	//@CachePut(value = "testCache", key="#movie.id")
 	public static void save(Movie movie) {
 		movies.add(movie);
 	}
@@ -25,7 +25,7 @@ public class MovieRepository {
 		return movies;
 	}
 	
-	@CachePut(value="movieCache", key="#result.id", condition="#result.id == 3")
+	//@CachePut(value="movieCache", key="#result.id", condition="#result.id == 3")
 	public static Movie getMovieById(int cod) {
 		log.info("Executando método...");
 		Movie movie = new Movie();

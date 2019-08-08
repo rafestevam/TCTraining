@@ -1,6 +1,10 @@
 package com.softwareag.testing.TCTraining.controllers;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,44 +79,134 @@ public class MovieController {
 	public Movie updateAndRemove() {
 
 		Cache cache = cacheManager.getCache("testCache");
-		Element e = cache.removeAndReturnElement(1L); //Obtem e limpa o elemento cacheado
+		Element e = cache.removeAndReturnElement(1L); // Obtem e limpa o elemento cacheado
 
 		return (Movie) e.getObjectValue();
 
 	}
-	
+
 	public void lockExample() {
+
+		Cache cache = cacheManager.getCache("testCache");
+
+		// Obter Lock de Thread para uma chave
+		cache.acquireReadLockOnKey(1L); // Lock de Leitura
+		cache.acquireWriteLockOnKey(1L); // Lock de Escrita
+
+		// Verificar se existe Lock de chave na Thread corrente
+		cache.isReadLockedByCurrentThread(1L); // Lock de Leitura
+		cache.isWriteLockedByCurrentThread(1L); // Lock de Escrita
+
+		// Liberar Lock da Thread Corrente
+		cache.releaseReadLockOnKey(1L); // Lock de Leitura
+		cache.releaseWriteLockOnKey(1L); // Lock de Escrita
+
+	}
+
+	public void persistenceExample() {
+
+		Cache cache = cacheManager.getCache("testCache");
+
+		// Os procedimentos abaixo são executados quando uma aplicação é STANDALONE
+		// Em aplicações com cache distribuido, o TSA gerencia automaticamente o
+		// ciclo de vida do cache
+
+		// Se o cache está configurado como "disk persistent", ao final do
+		// processamento do objeto é necessário descartar o cache
+		cache.dispose(); // Executa o descarte do cache
+
+		// Executa a limpeza do cache e aloca os dados para o disco
+		cache.flush();
+
+	}
+
+	@RequestMapping(value = "/addInCache", method = RequestMethod.POST, produces = "application/json")
+	public String addEntriesInCache() {
 		
 		Cache cache = cacheManager.getCache("testCache");
 		
-		//Obter Lock de Thread para uma chave
-		cache.acquireReadLockOnKey(1L); //Lock de Leitura
-		cache.acquireWriteLockOnKey(1L); //Lock de Escrita
+		Stream.iterate(0, n -> n + 1).limit(60).forEach(x -> {
+			movieService.save(new Movie(new Integer(x), "Filme " + x, "Diretor " + x));
+//			Movie movie = new Movie(new Integer(x), "Filme " + x, "Diretor " + x);
+//			cache.put(new Element(new Integer(x), movie));
+		});
+
+		int cacheSize = cache.getKeys().size();
+
+		return "O numero de entradas no cache é de " + cacheSize;
+
+	}
+	
+	@RequestMapping(value="/getFromCache", method = RequestMethod.GET, produces = "application/json")
+	public List<Movie> getEntriesFromCache(){
 		
-		//Verificar se existe Lock de chave na Thread corrente
-		cache.isReadLockedByCurrentThread(1L); //Lock de Leitura
-		cache.isWriteLockedByCurrentThread(1L); //Lock de Escrita
+		List<Movie> returnList = new ArrayList<Movie>();
+		List<Integer> keysToRead = new ArrayList<Integer>();
 		
-		//Liberar Lock da Thread Corrente
-		cache.releaseReadLockOnKey(1L);  //Lock de Leitura
-		cache.releaseWriteLockOnKey(1L); //Lock de Escrita
+		Stream.iterate(0, n -> n + 1).limit(60).forEach(x ->{
+			keysToRead.add(x);
+		});
+		
+		Cache cache = cacheManager.getCache("testCache");
+		Map<Object, Element> all = cache.getAll(keysToRead);
+		for(Integer key : keysToRead) {
+			Element element = all.get(key);
+			if(element == null) continue;
+			returnList.add((Movie) element.getObjectValue());
+		}
+		
+		return returnList;
 		
 	}
 	
-	public void persistenceExample() {
+	@RequestMapping(value="/getFromCache/{cod}", method = RequestMethod.GET, produces = "application/json")
+	public Movie getFromCacheWithId(@PathVariable("cod") Integer id) {
 		
 		Cache cache = cacheManager.getCache("testCache");
+		Element element = cache.get(id);
+		return (Movie) element.getObjectValue();
 		
-		//Os procedimentos abaixo são executados quando uma aplicação é STANDALONE
-		//Em aplicações com cache distribuido, o TSA gerencia automaticamente o
-		//ciclo de vida do cache
+	}
+
+	@RequestMapping(value="/addInCacheInterval", method = RequestMethod.POST, produces = "application/json")
+	public List<String> addEntriesInCacheInterval() throws Exception{
 		
-		//Se o cache está configurado como "disk persistent", ao final do
-		//processamento do objeto é necessário descartar o cache
-		cache.dispose(); //Executa o descarte do cache
+		List<String> resultList = new ArrayList<String>();
+		Cache cache = cacheManager.getCache("testCache");
 		
-		//Executa a limpeza do cache e aloca os dados para o disco
-		cache.flush();
+		Stream.iterate(0,  n -> n + 1).limit(3).forEach(x -> {
+			Stream.iterate(0, n -> n + 1).limit(10).forEach(y -> {
+				int i = (x > 0) ? ((x * 10) + y) : y;
+					movieService.save(new Movie(i, "Filme " + i, "Diretor " + i));
+			});
+			try {
+				Thread.sleep(20000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+		
+		HashSet<Integer> keysExpected = new HashSet<Integer>();
+		Stream.iterate(0, n -> n + 1).limit(30).forEach(x -> {
+			keysExpected.add(x);
+		});
+		
+		Map<Object, Element> all = cache.getAll(keysExpected);
+		for(Integer key : keysExpected) {
+				
+			Element element = all.get(key);
+			if (element == null)
+				continue;
+			if(element.isExpired()) {
+				resultList.add("Elemento " + key + " expirado.");
+			}else {
+				resultList.add("Elemento " + key + " ativo e no cache.");
+			}
+			
+		}
+		
+		return resultList;
 		
 	}
 

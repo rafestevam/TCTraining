@@ -5,8 +5,8 @@
          monitoring="autodetect"
          dynamicConfig="true">
 
-	<!--<diskStore path="C:/Terracotta" />-->
-	<terracottaConfig url="vvaigcs33677:9510"/>
+	<diskStore path="C:/Terracotta" />
+	<!--<terracottaConfig url="vvaigcs33677:9510"/>-->
 
 	<cache
 		name="movieCache"
@@ -20,11 +20,13 @@
 	
 	<cache
 		name="testCache"
-		maxEntriesLocalHeap="0"
-		timeToIdleSeconds="0"
-		timeToLiveSeconds="10000">
-			<!--<persistence strategy="localRestartable" />-->
-			<terracotta consistency="strong"/>
+		eternal="true"
+		maxEntriesLocalHeap="50"
+		timeToIdleSeconds="60"
+		timeToLiveSeconds="60"
+		memoryStoreEvictionPolicy="LRU"
+		maxElementsOnDisk="10000">
+			<persistence strategy="localRestartable" />
 	</cache>
          
 </ehcache>
