@@ -28,5 +28,17 @@
 		maxElementsOnDisk="10000">
 			<persistence strategy="localRestartable" />
 	</cache>
+	
+	<cache
+		name="personCache"
+		eternal="false"
+		maxEntriesLocalHeap="10"
+		timeToIdleSeconds="300"
+		timeToLiveSeconds="300">
+			<searchable>
+				<searchAttribute name="height" />
+				<searchAttribute name="bmi" expression="value.getBmi()"/>
+			</searchable>
+	</cache>
          
 </ehcache>

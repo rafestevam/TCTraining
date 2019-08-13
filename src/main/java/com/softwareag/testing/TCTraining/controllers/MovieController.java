@@ -125,10 +125,10 @@ public class MovieController {
 		
 		Cache cache = cacheManager.getCache("testCache");
 		
-		Stream.iterate(0, n -> n + 1).limit(60).forEach(x -> {
-			movieService.save(new Movie(new Integer(x), "Filme " + x, "Diretor " + x));
-//			Movie movie = new Movie(new Integer(x), "Filme " + x, "Diretor " + x);
-//			cache.put(new Element(new Integer(x), movie));
+		Stream.iterate(0, n -> n + 1).limit(50).forEach(x -> {
+//			movieService.save(new Movie(new Integer(x), "Filme " + x, "Diretor " + x));
+			Movie movie = new Movie(new Integer(x), "Filme " + x, "Diretor " + x);
+			cache.put(new Element(new Integer(x), movie));
 		});
 
 		int cacheSize = cache.getKeys().size();
@@ -143,7 +143,7 @@ public class MovieController {
 		List<Movie> returnList = new ArrayList<Movie>();
 		List<Integer> keysToRead = new ArrayList<Integer>();
 		
-		Stream.iterate(0, n -> n + 1).limit(60).forEach(x ->{
+		Stream.iterate(0, n -> n + 1).limit(50).forEach(x ->{
 			keysToRead.add(x);
 		});
 		
